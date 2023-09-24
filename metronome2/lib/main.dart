@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() {
   runApp(MetronomeApp());
@@ -29,6 +30,9 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
   Timer? _timer;
   int _selectedTimeSignatureIndex = 0;
   List<String> _availableTimeSignatures = ['4', '1', '2', '3', '5', '6', '7', '8'];
+  bool _accentBulbsVisible = false;
+  bool _regularBulbsVisible = false;
+
 
   @override
   void initState() {
@@ -47,6 +51,8 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
       _timer?.cancel();
       setState(() {
         _isPlaying = false;
+        _accentBulbsVisible = false;
+        _regularBulbsVisible = false;
       });
     } else {
       final int beatDuration = (60000 ~/ _bpm);
@@ -54,17 +60,22 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
       int beatCount = 0;
       final int beatsPerAccent = _getNumerator();
       _timer = Timer.periodic(Duration(milliseconds: beatDuration), (_) {
-        if (beatCount % beatsPerAccent == 0) {
-          _playMetronomeSound(isAccent: true);
-        } else {
-          _playMetronomeSound(isAccent: false);
-        }
-        beatCount++;
-        if (beatCount >= beatsPerAccent) {
-          beatCount = 0;
-        }
+        setState(() {
+          if (beatCount % beatsPerAccent == 0) {
+            _accentBulbsVisible = true;
+            _regularBulbsVisible = false;
+            _playMetronomeSound(isAccent: true);
+          } else {
+            _accentBulbsVisible = false;
+            _regularBulbsVisible = true;
+            _playMetronomeSound(isAccent: false);
+          }
+          beatCount++;
+          if (beatCount >= beatsPerAccent) {
+            beatCount = 0;
+          }
+        });
       });
-
       setState(() {
         _isPlaying = true;
       });
@@ -80,14 +91,15 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
   }
 
   int _getNumerator() {
-    final List<int> timeSignatureParts = _availableTimeSignatures[_selectedTimeSignatureIndex]
+    final List<
+        int> timeSignatureParts = _availableTimeSignatures[_selectedTimeSignatureIndex]
         .split('/')
         .map((part) => int.tryParse(part) ?? 0)
         .toList();
     if (timeSignatureParts.isNotEmpty && timeSignatureParts[0] != 0) {
       return timeSignatureParts[0];
     }
-    return 4; // Default numerator
+    return 4;
   }
 
   @override
@@ -122,6 +134,9 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+
+
+
                 Text('Akcent co:', style: TextStyle(fontSize: 18, color: Colors.white)),
               ],
             ),
@@ -130,14 +145,23 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
               items: _availableTimeSignatures.map((String timeSignature) {
                 return DropdownMenuItem<String>(
                   value: timeSignature,
-                  child: Text(timeSignature),
+                  child: Text(timeSignature, style: TextStyle(fontSize: 18, color: Colors.blueAccent)),
                 );
               }).toList(),
               onChanged: (String? newValue) {
-                 setState(() {
-                   _selectedTimeSignatureIndex = _availableTimeSignatures.indexOf(newValue!);
-                 });
-            },
+                setState(() {
+                  _selectedTimeSignatureIndex =
+                      _availableTimeSignatures.indexOf(newValue!);
+                });
+              }),
+            AnimatedOpacity(
+              opacity: _isPlaying && _accentBulbsVisible ? 1.0 : 0.0,
+              duration: Duration(milliseconds: 10),
+              child: FaIcon(
+                FontAwesomeIcons.music,
+                color: Colors.yellow,
+                size: 32.0,
+              ),
             ),
           ],
         ),
