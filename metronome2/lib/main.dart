@@ -28,7 +28,7 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
   late AudioPlayer _audioPlayer;
   Timer? _timer;
   int _selectedTimeSignatureIndex = 0;
-  List<String> _availableTimeSignatures = ['1/4', '2/4', '3/4', '4/4', '5/4', '6/4', '7/4', '8/4'];
+  List<String> _availableTimeSignatures = ['4', '1', '2', '3', '5', '6', '7', '8'];
 
   @override
   void initState() {
@@ -100,11 +100,30 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Tempo: $_bpm BPM', style: TextStyle(fontSize: 18, color: Colors.white)),
-            SizedBox(height: 20),
             ElevatedButton(
               onPressed: _startStopMetronome,
               child: Text(_isPlaying ? 'Stop' : 'Start'),
+            ),
+            SizedBox(height: 50),
+
+            Text('Tempo: $_bpm BPM', style: TextStyle(fontSize: 18, color: Colors.white)),
+            Slider(
+              value: _bpm.toDouble(),
+              min: 40,
+              max: 200,
+              onChanged: (value) {
+                setState(() {
+                  _bpm = value.round();
+                });
+              },
+            ),
+            SizedBox(height: 50),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('Akcent co:', style: TextStyle(fontSize: 18, color: Colors.white)),
+              ],
             ),
             DropdownButton<String>(
               value: _availableTimeSignatures[_selectedTimeSignatureIndex],
@@ -115,20 +134,10 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
                 );
               }).toList(),
               onChanged: (String? newValue) {
-                setState(() {
-                  _selectedTimeSignatureIndex = _availableTimeSignatures.indexOf(newValue!);
-                });
-              },
-            ),
-            Slider(
-              value: _bpm.toDouble(),
-              min: 40,
-              max: 200,
-              onChanged: (value) {
-                setState(() {
-                  _bpm = value.round();
-                });
-              },
+                 setState(() {
+                   _selectedTimeSignatureIndex = _availableTimeSignatures.indexOf(newValue!);
+                 });
+            },
             ),
           ],
         ),
