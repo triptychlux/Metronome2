@@ -4,21 +4,25 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() {
-  runApp(MetronomeApp());
+  runApp(const MetronomeApp());
 }
 
 class MetronomeApp extends StatelessWidget {
+  const MetronomeApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Metronome',
       theme: ThemeData(scaffoldBackgroundColor: const Color(0x00000000)),
-      home: MetronomeScreen(),
+      home: const MetronomeScreen(),
     );
   }
 }
 
 class MetronomeScreen extends StatefulWidget {
+  const MetronomeScreen({super.key});
+
   @override
   _MetronomeScreenState createState() => _MetronomeScreenState();
 }
@@ -29,10 +33,8 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
   late AudioPlayer _audioPlayer;
   Timer? _timer;
   int _selectedTimeSignatureIndex = 0;
-  List<String> _availableTimeSignatures = ['4', '1', '2', '3', '5', '6', '7', '8'];
+  final List<String> _availableTimeSignatures = ['4', '1', '2', '3', '5', '6', '7', '8'];
   bool _accentBulbsVisible = false;
-  bool _regularBulbsVisible = false;
-
 
   @override
   void initState() {
@@ -52,7 +54,6 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
       setState(() {
         _isPlaying = false;
         _accentBulbsVisible = false;
-        _regularBulbsVisible = false;
       });
     } else {
       final int beatDuration = (60000 ~/ _bpm);
@@ -63,11 +64,9 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
         setState(() {
           if (beatCount % beatsPerAccent == 0) {
             _accentBulbsVisible = true;
-            _regularBulbsVisible = false;
             _playMetronomeSound(isAccent: true);
           } else {
             _accentBulbsVisible = false;
-            _regularBulbsVisible = true;
             _playMetronomeSound(isAccent: false);
           }
           beatCount++;
@@ -106,7 +105,7 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Metronome'),
+        title: const Text('Metronome'),
       ),
       body: Center(
         child: Column(
@@ -116,9 +115,9 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
               onPressed: _startStopMetronome,
               child: Text(_isPlaying ? 'Stop' : 'Start'),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
 
-            Text('Tempo: $_bpm BPM', style: TextStyle(fontSize: 18, color: Colors.white)),
+            Text('Tempo: $_bpm BPM', style: const TextStyle(fontSize: 18, color: Colors.white)),
             Slider(
               value: _bpm.toDouble(),
               min: 40,
@@ -129,12 +128,11 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
                 });
               },
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
 
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-
 
 
                 Text('Akcent co:', style: TextStyle(fontSize: 18, color: Colors.white)),
@@ -145,7 +143,7 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
               items: _availableTimeSignatures.map((String timeSignature) {
                 return DropdownMenuItem<String>(
                   value: timeSignature,
-                  child: Text(timeSignature, style: TextStyle(fontSize: 18, color: Colors.blueAccent)),
+                  child: Text(timeSignature, style: const TextStyle(fontSize: 18, color: Colors.blueAccent)),
                 );
               }).toList(),
               onChanged: (String? newValue) {
@@ -156,8 +154,8 @@ class _MetronomeScreenState extends State<MetronomeScreen> {
               }),
             AnimatedOpacity(
               opacity: _isPlaying && _accentBulbsVisible ? 1.0 : 0.0,
-              duration: Duration(milliseconds: 10),
-              child: FaIcon(
+              duration: const Duration(milliseconds: 10),
+              child: const FaIcon(
                 FontAwesomeIcons.music,
                 color: Colors.yellow,
                 size: 32.0,
